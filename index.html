@@ -577,16 +577,20 @@
             <div class="modal-body">
                 <input type="hidden" id="reportTaskId">
                 <div class="alert alert-info small mb-3">
-                    <i class="bi bi-info-circle"></i> Vui lòng đính kèm minh chứng (ảnh/file) để Admin duyệt.
+                    <i class="bi bi-info-circle"></i> Vui lòng đính kèm minh chứng. Ảnh chụp sẽ được tự động nén để gửi nhanh hơn.
                 </div>
                 <div class="mb-3">
                     <label class="fw-bold small mb-1">File đính kèm (Bắt buộc)</label>
-                    <input type="file" id="reportFile" class="form-control">
-                    <div class="form-text text-danger small" id="fileError" style="display:none">File quá lớn (>5MB) hoặc chưa chọn file.</div>
+                    <input type="file" id="reportFile" class="form-control" accept="image/*,.pdf,.doc,.docx">
+                    <div class="form-text text-danger small" id="fileError" style="display:none"></div>
+                    <div id="uploadProgress" class="progress mt-2" style="display:none; height: 10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
+                    </div>
+                    <div class="form-text text-muted small mt-1" id="compressStatus"></div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-success fw-bold" onclick="submitReport()">Gửi báo cáo</button>
+                    <button type="button" class="btn btn-success fw-bold" id="btnSubmitReport" onclick="submitReport()">Gửi báo cáo</button>
                 </div>
             </div>
         </div>
@@ -728,7 +732,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // --- CẤU HÌNH ---
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpnB-1XDtjg-CkchBbD8aXyu30mSPDAuxuvxj_FQcxXsF8Yvrlzvjt_GFbxz0T1JOw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynCjJhB-uia5xc1eW1MWJbjkIr7wy7sotQRixmEPu8ecGs4jhRAUJ9aPFnUj5T_s1s/exec";
     
     let globalData = [], globalCompliance = [], currentUser = null;
     let chatContext = []; // Lưu lịch sử chat
@@ -1081,73 +1085,138 @@
         .then(r=>r.json()).then(res=>{if(res.status==='error'){alert(res.message); loadTaskList();} else if(v==100 && currentUser.role === 'Admin') loadTaskList()}); 
     }
     
-    // --- REPORT LOGIC MỚI ---
+    // --- REPORT LOGIC (UPDATED: AUTO COMPRESS IMAGE) ---
     function openReportModal(id) {
         if(!currentUser) return alert("Vui lòng đăng nhập!");
         document.getElementById('reportTaskId').value = id;
         document.getElementById('reportFile').value = '';
         document.getElementById('fileError').style.display = 'none';
+        document.getElementById('compressStatus').innerText = '';
+        document.getElementById('uploadProgress').style.display = 'none';
         new bootstrap.Modal(document.getElementById('reportModal')).show();
     }
 
-    function submitReport() {
+    // Helper: Nén ảnh
+    function compressImage(file, quality, maxWidth) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    resolve(canvas.toDataURL('image/jpeg', quality)); // Trả về base64 nén
+                };
+                img.onerror = error => reject(error);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    async function submitReport() {
         const id = document.getElementById('reportTaskId').value;
         const fileInput = document.getElementById('reportFile');
         const file = fileInput.files[0];
-        const btn = event.target;
+        const btn = document.getElementById('btnSubmitReport');
+        const errDiv = document.getElementById('fileError');
+        const statusDiv = document.getElementById('compressStatus');
+        const progressDiv = document.getElementById('uploadProgress');
 
-        if(!file) {
-            document.getElementById('fileError').style.display = 'block';
-            return;
-        }
-        if(file.size > 5 * 1024 * 1024) { // 5MB limit
-            alert("File quá lớn! Vui lòng chọn file < 5MB.");
-            return;
-        }
-
+        if(!file) { errDiv.innerText = "Vui lòng chọn file!"; errDiv.style.display = 'block'; return; }
+        
         btn.disabled = true;
-        btn.innerText = "Đang gửi...";
+        btn.innerText = "Đang xử lý...";
+        errDiv.style.display = 'none';
+        progressDiv.style.display = 'block';
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const base64Data = e.target.result;
-            const payload = {
-                id: id,
-                user_fullname: currentUser.name,
-                fileName: file.name,
-                mimeType: file.type,
-                fileData: base64Data
-            };
+        let base64Data = "";
+        let finalFileName = file.name;
+        let finalMimeType = file.type;
 
-            fetch(SCRIPT_URL + "?action=report_done", {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(async r => {
-                const text = await r.text();
-                try {
-                    const res = JSON.parse(text);
-                    if(res.status === 'success') {
-                        alert(res.message);
-                        bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
-                        loadTaskList();
-                    } else {
-                        alert("Lỗi: " + res.message);
-                    }
-                } catch(e) {
-                    console.error("Report Error:", text);
-                    alert("Lỗi gửi báo cáo: Server phản hồi không đúng định dạng. Vui lòng cấp quyền DriveApp.");
-                }
-            })
-            .catch(err => {
-                alert("Lỗi kết nối: " + err);
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerText = "Gửi báo cáo";
+        // Nếu là ảnh -> Nén
+        if (file.type.startsWith('image/')) {
+            statusDiv.innerText = "Đang nén ảnh để gửi nhanh hơn...";
+            try {
+                // Resize xuống max 1280px, chất lượng 70%
+                base64Data = await compressImage(file, 0.7, 1280);
+                finalFileName = finalFileName.replace(/\.[^/.]+$/, "") + ".jpg"; // Force jpg extension
+                finalMimeType = "image/jpeg";
+                statusDiv.innerText = "Đã nén ảnh xong. Đang gửi...";
+            } catch (e) {
+                console.error(e);
+                errDiv.innerText = "Lỗi khi xử lý ảnh."; errDiv.style.display = 'block';
+                btn.disabled = false; btn.innerText = "Gửi báo cáo";
+                return;
+            }
+        } else {
+            // File thường (PDF/Doc): Kiểm tra size
+            if(file.size > 3 * 1024 * 1024) {
+                errDiv.innerText = "File tài liệu quá lớn (>3MB). Vui lòng nén nhỏ lại."; 
+                errDiv.style.display = 'block';
+                btn.disabled = false; btn.innerText = "Gửi báo cáo";
+                progressDiv.style.display = 'none';
+                return;
+            }
+            statusDiv.innerText = "Đang đọc file...";
+            base64Data = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
             });
+        }
+
+        // Gửi lên Server
+        const payload = {
+            id: id,
+            user_fullname: currentUser.name,
+            fileName: finalFileName,
+            mimeType: finalMimeType,
+            fileData: base64Data
         };
-        reader.readAsDataURL(file);
+
+        fetch(SCRIPT_URL + "?action=report_done", {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(async r => {
+            const text = await r.text();
+            try {
+                const res = JSON.parse(text);
+                if(res.status === 'success') {
+                    alert("✅ " + res.message);
+                    bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+                    loadTaskList();
+                } else {
+                    alert("⚠️ Lỗi: " + res.message);
+                }
+            } catch(e) {
+                console.error("Report Error:", text);
+                alert("Lỗi phản hồi từ Server. Vui lòng thử lại.");
+            }
+        })
+        .catch(err => {
+            alert("Lỗi kết nối mạng: " + err);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = "Gửi báo cáo";
+            progressDiv.style.display = 'none';
+            statusDiv.innerText = "";
+        });
     }
 
     function approveTask(id) {
@@ -1338,19 +1407,6 @@
         var pr={}; c.forEach(r=>{let n=r[2],h=r.length>=6,tp=h?r[3]:(r[3].includes("Khen")?"Khen":"Vi phạm");if(!pr[n])pr[n]=0;if(tp.includes("Khen"))pr[n]++;}); 
         var ar=[['NV','Khen thưởng',{role:"style"}]]; Object.keys(pr).sort().forEach(k=>{if(pr[k]>0)ar.push([k,pr[k],'#ffc107']);}); 
         if(ar.length>1) new google.visualization.ColumnChart(document.getElementById('columnchart_reward')).draw(google.visualization.arrayToDataTable(ar),{legend:'none',chartArea:{width:'85%',height:'70%'}}); else document.getElementById('columnchart_reward').innerHTML="<div class='d-flex align-items-center justify-content-center h-100 text-muted'>Trống</div>";
-    }
-
-    function renderCal(t, c, today) { 
-        var ev=[]; 
-        t.forEach(r => {
-            let dlRaw = r[9]||r[4]; if(!dlRaw) return; 
-            let status = String(r[2]).trim(); let dlDate = new Date(dlRaw); let isOverdue = (dlDate < today && status !== 'Done');
-            let bgColor, borderColor; if (status === 'Done') { bgColor = '#198754'; borderColor = '#198754'; } else if (isOverdue) { bgColor = '#dc3545'; borderColor = '#dc3545'; } else { bgColor = '#0d6efd'; borderColor = '#0d6efd'; }
-            ev.push({ title: `${status === 'Done' ? '✔' : (isOverdue ? '⚠️' : '⏳')} ${r[1]} (${r[7]})`, start: dlDate.toISOString().split('T')[0], backgroundColor: bgColor, borderColor: borderColor, textColor: 'white', extendedProps: { description: `Trạng thái: ${status}\nGhi chú: ${r[5]||'Không'}` } });
-        }); 
-        c.forEach(r => { if(!r[1]) return; let h=r.length>=6, tp=h?r[3]:(r[3].includes("Khen")?"Khen":"Vi phạm"); let isReward = tp.includes("Khen"); ev.push({ title: isReward ? `🏆 ${r[2]}` : `⛔ ${r[2]}`, start: new Date(r[1]).toISOString().split('T')[0], backgroundColor: isReward ? '#ffc107' : '#212529', borderColor: isReward ? '#ffc107' : '#212529', textColor: isReward ? 'black' : 'white', extendedProps: { description: h ? r[4] : r[3] } }); }); 
-        var calEl = document.getElementById('calendar'); calEl.innerHTML = ""; 
-        var cal = new FullCalendar.Calendar(calEl, { initialView: 'dayGridMonth', locale: 'vi', height: 'auto', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' }, buttonText: { today: 'Hôm nay', month: 'Lịch tháng', list: 'Danh sách' }, events: ev, eventClick: function(i) { alert(`📌 ${i.event.title}\nℹ️ ${i.event.extendedProps.description || ''}`); } }); cal.render(); 
     }
 
     function exportExcelReport() {
