@@ -577,11 +577,12 @@
             <div class="modal-body">
                 <input type="hidden" id="reportTaskId">
                 <div class="alert alert-info small mb-3">
-                    <i class="bi bi-info-circle"></i> Vui lòng đính kèm minh chứng. Ảnh chụp sẽ được tự động nén để gửi nhanh hơn.
+                    <i class="bi bi-info-circle"></i> Vui lòng đính kèm minh chứng. Hỗ trợ: Ảnh, PDF, Word, Excel.
+                    <br><b>Lưu ý: File tối đa 4MB.</b>
                 </div>
                 <div class="mb-3">
                     <label class="fw-bold small mb-1">File đính kèm (Bắt buộc)</label>
-                    <input type="file" id="reportFile" class="form-control" accept="image/*,.pdf,.doc,.docx">
+                    <input type="file" id="reportFile" class="form-control" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
                     <div class="form-text text-danger small" id="fileError" style="display:none"></div>
                     <div id="uploadProgress" class="progress mt-2" style="display:none; height: 10px;">
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
@@ -853,9 +854,9 @@
         })
         .then(async r => {
             const text = await r.text();
+            typing.style.display = 'none'; // Hide typing indicator immediately
             try {
                 const res = JSON.parse(text);
-                typing.style.display = 'none';
                 let answer = "";
                 if(res.status === 'success') {
                     answer = res.answer;
@@ -864,14 +865,16 @@
                 }
                 let displayHtml = answer.replace(/\n/g, '<br>');
                 historyDiv.innerHTML += `<div class="msg msg-ai">${displayHtml}</div>`;
+                
+                // Update context correctly
+                chatContext.push({ role: "User", content: question });
+                chatContext.push({ role: "Lily", content: answer });
+
             } catch(e) {
-                typing.style.display = 'none';
                 historyDiv.innerHTML += `<div class="msg msg-ai text-danger">Lỗi phản hồi: Server chưa cấp quyền hoặc API Key sai.<br>Chi tiết: ${text.substring(0, 100)}...</div>`;
                 console.error("AI Error:", text);
             }
             historyDiv.scrollTop = historyDiv.scrollHeight;
-            if(chatContext.length > 0 && typeof answer !== 'undefined') chatContext.push({ role: "User", content: question });
-            if(chatContext.length > 0 && typeof answer !== 'undefined') chatContext.push({ role: "Lily", content: answer });
         })
         .catch(e => {
             typing.style.display = 'none';
@@ -1013,12 +1016,17 @@
             if (status === 'Done') {
                 actionBtns = '<span class="text-success fw-bold">✔ Hoàn tất</span>';
             } else if (status === 'Waiting') {
+                actionBtns = attachLink;
                 if (currentUser && currentUser.role === 'Admin') {
                     // Admin: Sử dụng Modal Review để duyệt
-                    actionBtns = `<button class="btn btn-sm btn-primary shadow-sm" onclick="openReviewModal('${id}')">🔍 Xem & Duyệt</button>`;
+                    actionBtns += `
+                    <div class="d-flex gap-1 justify-content-center mt-1">
+                        <button class="btn btn-sm btn-success" onclick="approveTask('${id}')" title="Duyệt">✅ Duyệt</button>
+                        <button class="btn btn-sm btn-danger" onclick="rejectTask('${id}')" title="Từ chối">❌</button>
+                    </div>`;
                 } else {
                     // Member: Chờ
-                    actionBtns = `<span class="text-muted fst-italic small">⏳ Đang chờ duyệt...</span>`;
+                    actionBtns += `<span class="text-muted fst-italic small">⏳ Đang chờ duyệt...</span>`;
                 }
             } else {
                 // Todo, Doing, Overdue
@@ -1085,7 +1093,7 @@
         .then(r=>r.json()).then(res=>{if(res.status==='error'){alert(res.message); loadTaskList();} else if(v==100 && currentUser.role === 'Admin') loadTaskList()}); 
     }
     
-    // --- REPORT LOGIC (UPDATED: AUTO COMPRESS IMAGE) ---
+    // --- REPORT LOGIC (FIXED) ---
     function openReportModal(id) {
         if(!currentUser) return alert("Vui lòng đăng nhập!");
         document.getElementById('reportTaskId').value = id;
@@ -1096,35 +1104,21 @@
         new bootstrap.Modal(document.getElementById('reportModal')).show();
     }
 
-    // Helper: Nén ảnh
-    function compressImage(file, quality, maxWidth) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = event => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > maxWidth) {
-                        height = Math.round((height * maxWidth) / width);
-                        width = maxWidth;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    resolve(canvas.toDataURL('image/jpeg', quality)); // Trả về base64 nén
-                };
-                img.onerror = error => reject(error);
-            };
-            reader.onerror = error => reject(error);
-        });
+    function getMimeType(fileName) {
+        const ext = fileName.split('.').pop().toLowerCase();
+        const map = {
+            'pdf': 'application/pdf',
+            'doc': 'application/msword',
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls': 'application/vnd.ms-excel',
+            'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'ppt': 'application/vnd.ms-powerpoint',
+            'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png'
+        };
+        return map[ext] || 'application/octet-stream';
     }
 
     async function submitReport() {
@@ -1138,6 +1132,13 @@
 
         if(!file) { errDiv.innerText = "Vui lòng chọn file!"; errDiv.style.display = 'block'; return; }
         
+        // Check size (4MB limit for safe Base64)
+        if(file.size > 4 * 1024 * 1024) {
+            errDiv.innerText = "File quá lớn (>4MB). Vui lòng nén nhỏ lại trước khi gửi."; 
+            errDiv.style.display = 'block';
+            return;
+        }
+
         btn.disabled = true;
         btn.innerText = "Đang xử lý...";
         errDiv.style.display = 'none';
@@ -1145,39 +1146,26 @@
 
         let base64Data = "";
         let finalFileName = file.name;
-        let finalMimeType = file.type;
+        // Tự động nhận diện MIME type nếu trình duyệt không nhận diện được (ví dụ file .docx trên một số máy)
+        let finalMimeType = file.type || getMimeType(file.name);
 
-        // Nếu là ảnh -> Nén
-        if (file.type.startsWith('image/')) {
-            statusDiv.innerText = "Đang nén ảnh để gửi nhanh hơn...";
-            try {
-                // Resize xuống max 1280px, chất lượng 70%
-                base64Data = await compressImage(file, 0.7, 1280);
-                finalFileName = finalFileName.replace(/\.[^/.]+$/, "") + ".jpg"; // Force jpg extension
-                finalMimeType = "image/jpeg";
-                statusDiv.innerText = "Đã nén ảnh xong. Đang gửi...";
-            } catch (e) {
-                console.error(e);
-                errDiv.innerText = "Lỗi khi xử lý ảnh."; errDiv.style.display = 'block';
-                btn.disabled = false; btn.innerText = "Gửi báo cáo";
-                return;
-            }
-        } else {
-            // File thường (PDF/Doc): Kiểm tra size
-            if(file.size > 3 * 1024 * 1024) {
-                errDiv.innerText = "File tài liệu quá lớn (>3MB). Vui lòng nén nhỏ lại."; 
-                errDiv.style.display = 'block';
-                btn.disabled = false; btn.innerText = "Gửi báo cáo";
-                progressDiv.style.display = 'none';
-                return;
-            }
-            statusDiv.innerText = "Đang đọc file...";
-            base64Data = await new Promise(resolve => {
+        statusDiv.innerText = "Đang đọc file...";
+        
+        try {
+            base64Data = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(e);
                 reader.readAsDataURL(file);
             });
+        } catch (e) {
+            console.error(e);
+            errDiv.innerText = "Lỗi đọc file trên thiết bị."; errDiv.style.display = 'block';
+            btn.disabled = false; btn.innerText = "Gửi báo cáo";
+            return;
         }
+
+        statusDiv.innerText = "Đang gửi lên máy chủ (Vui lòng chờ)...";
 
         // Gửi lên Server
         const payload = {
@@ -1201,11 +1189,11 @@
                     bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
                     loadTaskList();
                 } else {
-                    alert("⚠️ Lỗi: " + res.message);
+                    alert("⚠️ Lỗi từ Server: " + res.message);
                 }
             } catch(e) {
                 console.error("Report Error:", text);
-                alert("Lỗi phản hồi từ Server. Vui lòng thử lại.");
+                alert("Lỗi phản hồi từ Server. Có thể do mạng yếu hoặc file bị chặn.");
             }
         })
         .catch(err => {
@@ -1287,7 +1275,16 @@
             role: currentUser.role
         };
         
-        alert("Đang cập nhật (Yêu cầu Backend hỗ trợ action 'edit_task')...");
+        fetch(SCRIPT_URL + "?action=edit_task", {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(res => {
+            alert(res.message);
+            bootstrap.Modal.getInstance(document.getElementById('editTaskModal')).hide();
+            loadTaskList();
+        });
     }
 
     // --- REVIEW MODAL LOGIC (NEW) ---
