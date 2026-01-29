@@ -10,6 +10,8 @@
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <!-- Libraries -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -591,6 +593,88 @@
     </div>
 </div>
 
+<!-- ================= MODAL EDIT TASK (ADMIN ONLY) ================= -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold">✏️ Chỉnh sửa Công việc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="editTaskForm">
+                    <input type="hidden" id="editTaskId">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tên công việc</label>
+                        <input type="text" class="form-control" id="editTaskName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Người thực hiện (Hiện tại)</label>
+                        <input type="text" class="form-control" id="editTaskAssignee" readonly>
+                        <div class="form-text">Để thay đổi người làm, vui lòng tạo công việc mới hoặc cập nhật trong Sheet (phiên bản Web hỗ trợ sửa thông tin cơ bản).</div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Hạn chót</label>
+                            <input type="date" class="form-control" id="editTaskDeadline">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Độ khó</label>
+                            <select class="form-select" id="editTaskDifficulty">
+                                <option value="1">⭐ Dễ</option>
+                                <option value="2">⭐⭐ Trung bình</option>
+                                <option value="3">⭐⭐⭐ Khó</option>
+                                <option value="4">⭐⭐⭐⭐ Phức tạp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ghi chú</label>
+                        <textarea class="form-control" id="editTaskNotes" rows="3"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="submitEditTask()">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL DUYỆT BÁO CÁO (MỚI) ================= -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title fw-bold">📋 Duyệt Báo Cáo Hoàn Thành</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="reviewTaskId">
+                <div class="mb-3">
+                    <label class="fw-bold text-muted small">Công việc:</label>
+                    <div id="reviewTaskName" class="fw-bold fs-5 text-dark"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold text-muted small">Người thực hiện:</label>
+                    <div id="reviewAssignee"></div>
+                </div>
+                <div class="card bg-light border-0 mb-3">
+                    <div class="card-body p-3">
+                        <label class="fw-bold text-muted small mb-2">Tài liệu minh chứng:</label>
+                        <div id="reviewFileContainer"></div>
+                    </div>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button class="btn btn-danger me-md-2" onclick="submitReviewDecision('reject')">❌ Trả lại</button>
+                    <button class="btn btn-success" onclick="submitReviewDecision('approve')">✅ Phê duyệt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -917,22 +1001,20 @@
 
             // --- LOGIC PHÂN QUYỀN NÚT BẤM ---
             let actionBtns = '';
-            let attachLink = fileUrl ? `<div class="mb-1"><a href="${fileUrl}" target="_blank" class="badge bg-info text-decoration-none">📎 Xem File</a></div>` : '';
+            // Nút xem File (Hiển thị cho Admin khi Waiting hoặc khi đã xong)
+            let attachLink = (fileUrl && currentUser && currentUser.role === 'Admin') 
+                ? `<div class="mb-1"><a href="${fileUrl}" target="_blank" class="btn btn-sm btn-info text-white text-decoration-none" title="Xem báo cáo"><i class="bi bi-file-earmark-text"></i> 📄 Xem Báo cáo</a></div>` 
+                : '';
 
             if (status === 'Done') {
                 actionBtns = '<span class="text-success fw-bold">✔ Hoàn tất</span>';
             } else if (status === 'Waiting') {
-                actionBtns = attachLink;
                 if (currentUser && currentUser.role === 'Admin') {
-                    // Admin: Duyệt hoặc Từ chối
-                    actionBtns += `
-                    <div class="d-flex gap-1 justify-content-center">
-                        <button class="btn btn-sm btn-success" onclick="approveTask('${id}')" title="Duyệt">✅ Duyệt</button>
-                        <button class="btn btn-sm btn-danger" onclick="rejectTask('${id}')" title="Từ chối">❌</button>
-                    </div>`;
+                    // Admin: Sử dụng Modal Review để duyệt
+                    actionBtns = `<button class="btn btn-sm btn-primary shadow-sm" onclick="openReviewModal('${id}')">🔍 Xem & Duyệt</button>`;
                 } else {
                     // Member: Chờ
-                    actionBtns += `<span class="text-muted fst-italic small">⏳ Đang chờ duyệt...</span>`;
+                    actionBtns = `<span class="text-muted fst-italic small">⏳ Đang chờ duyệt...</span>`;
                 }
             } else {
                 // Todo, Doing, Overdue
@@ -955,14 +1037,27 @@
                 else if(difficulty == '4') diffHtml = '<span class="badge-diff diff-complex">⭐⭐⭐⭐ Phức tạp</span>';
             }
 
+            // Nút sửa cho Admin
+            let editBtn = '';
+            if (currentUser && currentUser.role === 'Admin') {
+                editBtn = `<button class="btn btn-sm btn-link text-secondary p-0 ms-2" onclick="openEditTask('${id}')" title="Sửa công việc">✏️</button>`;
+            }
+
             tb.innerHTML += `<tr class="${isOverdue ? 'table-danger' : ''}">
-                <td>${groupBadge} <span class="fw-bold text-dark">${name}</span><div class="text-muted small mt-1"><em>${r[5] || ''}</em></div></td>
+                <td>
+                    ${groupBadge} 
+                    <div class="d-flex align-items-center">
+                        <span class="fw-bold text-dark">${name}</span>
+                        ${editBtn}
+                    </div>
+                    <div class="text-muted small mt-1"><em>${r[5] || ''}</em></div>
+                </td>
                 <td class="text-center">${diffHtml}</td>
                 <td>${slider}</td>
                 <td><small class="fw-bold text-primary">${assignee}</small></td>
                 <td class="small">${dlHtml}</td>
                 <td><span class="badge badge-status ${badgeClass}">${statusText}</span></td>
-                <td class="text-center">${actionBtns}</td>
+                <td class="text-center align-middle">${actionBtns}</td>
             </tr>`;
         });
     }
@@ -1079,6 +1174,83 @@
         .then(res => { alert(res.message); loadTaskList(); });
     }
     
+    // --- EDIT TASK LOGIC (NEW) ---
+    function openEditTask(id) {
+        const task = globalData.find(r => r[0] == id);
+        if(!task) return;
+        document.getElementById('editTaskId').value = id;
+        document.getElementById('editTaskName').value = task[1];
+        document.getElementById('editTaskAssignee').value = task[7]; // Assignee is readonly in edit for simplicity
+        document.getElementById('editTaskNotes').value = task[5] || '';
+        
+        // Populate Date
+        let deadline = task[9] || task[4];
+        if(deadline) {
+            let d = new Date(deadline);
+            let day = ("0" + d.getDate()).slice(-2);
+            let month = ("0" + (d.getMonth() + 1)).slice(-2);
+            let today = d.getFullYear()+"-"+(month)+"-"+(day);
+            document.getElementById('editTaskDeadline').value = today;
+        } else {
+            document.getElementById('editTaskDeadline').value = '';
+        }
+        
+        // Populate Difficulty
+        let diff = task[12];
+        if(diff) document.getElementById('editTaskDifficulty').value = diff;
+
+        new bootstrap.Modal(document.getElementById('editTaskModal')).show();
+    }
+
+    function submitEditTask() {
+        const id = document.getElementById('editTaskId').value;
+        const name = document.getElementById('editTaskName').value;
+        const deadline = document.getElementById('editTaskDeadline').value;
+        const diff = document.getElementById('editTaskDifficulty').value;
+        const notes = document.getElementById('editTaskNotes').value;
+        
+        const payload = {
+            id: id,
+            taskName: name,
+            deadline: deadline,
+            difficulty: diff,
+            notes: notes,
+            role: currentUser.role
+        };
+        
+        alert("Đang cập nhật (Yêu cầu Backend hỗ trợ action 'edit_task')...");
+    }
+
+    // --- REVIEW MODAL LOGIC (NEW) ---
+    function openReviewModal(id) {
+        const task = globalData.find(r => r[0] == id);
+        if(!task) return;
+        
+        document.getElementById('reviewTaskId').value = id;
+        document.getElementById('reviewTaskName').innerText = task[1];
+        document.getElementById('reviewAssignee').innerText = task[7];
+        
+        const fileUrl = task[13]; // Cột N (Index 13)
+        const container = document.getElementById('reviewFileContainer');
+        if (fileUrl) {
+            container.innerHTML = `<a href="${fileUrl}" target="_blank" class="btn btn-outline-primary w-100 fw-bold"><i class="bi bi-file-earmark-text"></i> Mở File Báo Cáo</a>`;
+        } else {
+            container.innerHTML = `<span class="text-muted fst-italic">Không có file đính kèm.</span>`;
+        }
+        
+        new bootstrap.Modal(document.getElementById('reviewModal')).show();
+    }
+
+    function submitReviewDecision(type) {
+        const id = document.getElementById('reviewTaskId').value;
+        if (type === 'approve') {
+            approveTask(id);
+        } else {
+            rejectTask(id);
+        }
+        bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
+    }
+
     function sendEmailBackend(id,t,p,d){ 
         if(!confirm(`Gửi mail nhắc nhở cho ${p}?`))return; 
         let dl=d?new Date(d).toLocaleDateString('vi-VN'):'Sớm nhất'; const btn=event.target; const txt=btn.innerText; btn.innerText="⏳..."; btn.disabled=true; 
