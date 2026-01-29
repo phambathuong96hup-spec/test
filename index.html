@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Khoa Dược - Pro</title>
+    <title>Quản lý Khoa Dược - Pro (AI Integrated)</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,8 +17,9 @@
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     
     <style>
+        /* --- CSS GỐC --- */
         :root {
-            --primary-color: #0f9d58; /* Google Green */
+            --primary-color: #0f9d58;
             --secondary-color: #e8f5e9;
             --text-dark: #2c3e50;
             --bg-body: #f8f9fa;
@@ -33,12 +34,11 @@
             font-size: 0.9rem;
         }
 
-        /* Header & Nav */
         .header-section {
             background: white;
             padding: 1.5rem;
             border-radius: 0 0 var(--card-radius) var(--card-radius);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
         }
 
@@ -50,9 +50,7 @@
             width: 100%;
         }
 
-        .nav-pills .nav-item {
-            flex: 1;
-        }
+        .nav-pills .nav-item { flex: 1; }
 
         .nav-pills .nav-link {
             color: #5f6368;
@@ -65,25 +63,24 @@
         .nav-pills .nav-link.active {
             background-color: white;
             color: var(--primary-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
         }
 
         .nav-pills .nav-link:hover:not(.active) {
-            background-color: rgba(0,0,0,0.05);
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
-        /* Cards */
         .card-custom {
             border: none;
             border-radius: var(--card-radius);
             background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
             transition: var(--transition);
             overflow: hidden;
         }
 
         .card-custom:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
             transform: translateY(-2px);
         }
 
@@ -95,7 +92,6 @@
             border-bottom: 1px solid rgba(15, 157, 88, 0.1);
         }
 
-        /* Table */
         .table-custom thead th {
             background-color: #f1f3f4;
             color: #444;
@@ -105,76 +101,138 @@
             font-size: 0.8rem;
             padding: 12px;
         }
+
         .table-custom tbody td {
             padding: 12px;
             vertical-align: middle;
         }
-        .table-hover tbody tr:hover {
-            background-color: #f8fff9;
+
+        .table-hover tbody tr:hover { background-color: #f8fff9; }
+
+        .badge-status {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.75rem;
         }
 
-        /* Status Badges */
-        .badge-status { padding: 6px 10px; border-radius: 6px; font-weight: 500; font-size: 0.75rem; }
         .bg-todo { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
         .bg-doing { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
         .bg-done { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
         .bg-overdue { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .bg-waiting { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
 
-        /* Custom Inputs */
+        .badge-diff {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            margin-right: 4px;
+        }
+
+        .diff-easy { color: #198754; background: #d1e7dd; border-color: #a3cfbb; }
+        .diff-medium { color: #fd7e14; background: #ffe5d0; border-color: #fecba1; }
+        .diff-hard { color: #dc3545; background: #f8d7da; border-color: #f5c2c7; }
+        .diff-complex { color: #6610f2; background: #e0cffc; border-color: #bda5f9; }
+
         .form-control, .form-select {
             border-radius: 8px;
             border: 1px solid #dee2e6;
             padding: 10px 12px;
         }
+
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(15, 157, 88, 0.25);
         }
 
-        /* Calendar Styling */
         #calendar {
             background: white;
             padding: 15px;
             border-radius: var(--card-radius);
         }
+
         .fc-event {
             border: none !important;
             border-radius: 4px !important;
             padding: 2px 4px !important;
             font-size: 0.8rem !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             cursor: pointer;
         }
-        .fc-day-today {
-            background-color: #f0fdf4 !important; /* Light green for today */
-        }
+
+        .fc-day-today { background-color: #f0fdf4 !important; }
+
         .fc-toolbar-title {
             font-size: 1.2rem !important;
             font-weight: 700;
             color: var(--primary-color);
         }
+
         .fc-button-primary {
             background-color: var(--primary-color) !important;
             border-color: var(--primary-color) !important;
         }
 
-        /* Utilities */
         .admin-only, .logged-only { display: none !important; }
         .deadline-extended { color: #6f42c1; font-weight: 700; }
         .deadline-original { text-decoration: line-through; color: #aaa; font-size: 0.8em; }
-        
-        .person-item { padding: 8px 12px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; }
+
+        .person-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
         .person-item:hover { background-color: #f5f5f5; }
         .person-item input { margin-right: 10px; transform: scale(1.1); }
         .dropdown-menu-custom { max-height: 250px; overflow-y: auto; padding: 0; }
-        
-        .btn-action-group .btn {
-            margin-right: 4px;
-            margin-bottom: 4px;
+        .btn-action-group .btn { margin-right: 4px; margin-bottom: 4px; }
+
+        /* --- CHATBOT UI --- */
+        .chat-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px;
+            border-radius: 50%; background: linear-gradient(135deg, #0f9d58, #0b7a43);
+            color: white; border: none; font-size: 28px;
+            box-shadow: 0 4px 15px rgba(15, 157, 88, 0.4); z-index: 1000;
+            transition: transform 0.3s; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
+        .chat-btn:hover { transform: scale(1.1); }
         
-        /* Floating Action Button for Mobile (Optional, kept hidden for now) */
-        .fab { position: fixed; bottom: 20px; right: 20px; border-radius: 50%; width: 56px; height: 56px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 1000; }
+        .chat-box {
+            position: fixed; bottom: 100px; right: 30px;
+            width: 360px; height: 500px;
+            background: white; border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none; flex-direction: column; z-index: 1000;
+            overflow: hidden; border: 1px solid #eee;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .chat-header { 
+            background: linear-gradient(135deg, #0f9d58, #0b7a43); 
+            color: white; padding: 15px 20px; 
+            font-weight: 700; display: flex; justify-content: space-between; align-items: center; 
+        }
+        .chat-body { 
+            flex: 1; padding: 15px; overflow-y: auto; 
+            background: #f9f9f9; font-size: 0.9rem; scroll-behavior: smooth;
+        }
+        .chat-footer { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 8px; background: white; }
+        
+        .msg { margin-bottom: 12px; padding: 10px 14px; border-radius: 12px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
+        .msg-user { background: #d1e7dd; color: #0f5132; align-self: flex-end; margin-left: auto; border-bottom-right-radius: 2px; }
+        .msg-ai { background: white; border: 1px solid #e0e0e0; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .typing { font-style: italic; color: #888; font-size: 0.8rem; margin-bottom: 10px; display: none; margin-left: 10px; }
+        
+        @media (max-width: 576px) {
+            .chat-box { width: 90%; right: 5%; bottom: 90px; height: 60vh; }
+        }
     </style>
 </head>
 <body>
@@ -186,10 +244,9 @@
             <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; font-size: 24px;">🏥</div>
             <div>
                 <h4 class="fw-bold m-0" style="color: var(--primary-color);">KHOA DƯỢC</h4>
-                <small class="text-muted">Hệ thống Quản lý Công việc & Nội quy</small>
+                <small class="text-muted">Hệ thống Quản lý Công việc & AI Lily</small>
             </div>
         </div>
-        
         <div class="d-flex align-items-center gap-2">
             <span id="userDisplay" class="fw-bold text-dark bg-light px-3 py-2 rounded-pill border"></span>
             <button class="btn btn-outline-secondary btn-sm d-none" id="btnChangePin" onclick="showChangePinModal()">🔐 Đổi PIN</button>
@@ -225,24 +282,36 @@
     <!-- Content -->
     <div class="tab-content" id="pills-tabContent">
         
-        <!-- TAB 1: DANH SÁCH CÔNG VIỆC -->
+        <!-- TAB 1: DANH SÁCH -->
         <div class="tab-pane fade show active" id="pills-list">
             <div class="card card-custom p-3 mb-3">
                 <div class="row g-2 align-items-center">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="small text-muted fw-bold">Bộ phận</label>
                         <select id="filterGroup" class="form-select form-select-sm" onchange="renderTable()"></select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="small text-muted fw-bold">Nhân sự</label>
                         <select id="filterAssignee" class="form-select form-select-sm" onchange="renderTable()"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small text-muted fw-bold">Độ khó</label>
+                        <select id="filterDifficulty" class="form-select form-select-sm" onchange="renderTable()">
+                            <option value="">Tất cả</option>
+                            <option value="1">⭐ Dễ</option>
+                            <option value="2">⭐⭐ Trung bình</option>
+                            <option value="3">⭐⭐⭐ Khó</option>
+                            <option value="4">⭐⭐⭐⭐ Phức tạp</option>
+                        </select>
                     </div>
                     <div class="col-md-2">
                         <label class="small text-muted fw-bold">Trạng thái</label>
                         <select id="filterStatus" class="form-select form-select-sm" onchange="renderTable()">
                             <option value="">Tất cả</option>
-                            <option value="Todo">Chưa xong</option>
-                            <option value="Done">Đã xong</option>
+                            <option value="Pending">⏳ Chưa hoàn thành</option>
+                            <option value="Waiting">✋ Chờ duyệt</option>
+                            <option value="Done">✅ Đã hoàn thành</option>
+                            <option value="Overdue">🔥 Quá hạn</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -255,14 +324,14 @@
                     </div>
                 </div>
             </div>
-
             <div class="card card-custom">
                 <div class="table-responsive">
                     <table class="table table-hover table-custom mb-0">
                         <thead>
                             <tr>
-                                <th width="35%">Công việc / Tổ</th>
-                                <th width="20%">Tiến độ</th>
+                                <th width="30%">Công việc / Tổ</th>
+                                <th width="10%" class="text-center">Độ khó</th>
+                                <th width="15%">Tiến độ</th>
                                 <th width="15%">Người thực hiện</th>
                                 <th width="12%">Deadline</th>
                                 <th width="10%">Trạng thái</th>
@@ -275,22 +344,17 @@
             </div>
         </div>
 
-        <!-- TAB 2: BÁO CÁO & LỊCH -->
+        <!-- TAB 2: BÁO CÁO -->
         <div class="tab-pane fade" id="pills-report">
-            <!-- Filter Bar -->
             <div class="card card-custom p-3 mb-4 bg-white border-start border-5 border-success">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-success fs-5">📅 BÁO CÁO THÁNG:</span>
                         <input type="month" id="reportMonthSelect" class="form-control form-control-lg" style="width: auto;" onchange="updateReport()">
                     </div>
-                    <button class="btn btn-success fw-bold shadow-sm px-4" onclick="exportExcelReport()">
-                        📥 Xuất Excel
-                    </button>
+                    <button class="btn btn-success fw-bold shadow-sm px-4" onclick="exportExcelReport()">📥 Xuất Excel</button>
                 </div>
             </div>
-
-            <!-- Charts Row -->
             <div class="row g-4 mb-4">
                 <div class="col-md-6 col-lg-3">
                     <div class="card card-custom h-100">
@@ -300,7 +364,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-5">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card card-custom h-100">
+                        <div class="card-header-custom text-center">🧩 Phân bố Độ khó</div>
+                        <div class="card-body p-0 d-flex justify-content-center align-items-center">
+                            <div id="piechart_difficulty" style="width: 100%; height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-6">
                     <div class="card card-custom h-100">
                         <div class="card-header-custom text-center">📈 Chi tiết nhân sự</div>
                         <div class="card-body p-0">
@@ -308,7 +380,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-2">
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
                     <div class="card card-custom h-100 border-start border-4 border-danger">
                         <div class="p-2 text-center text-danger fw-bold bg-light">⚠️ Vi phạm</div>
                         <div class="card-body p-0">
@@ -316,7 +390,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-2">
+                <div class="col-md-6">
                     <div class="card card-custom h-100 border-start border-4 border-warning">
                         <div class="p-2 text-center text-warning fw-bold bg-light">🏆 Khen thưởng</div>
                         <div class="card-body p-0">
@@ -325,8 +399,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Calendar -->
             <div class="card card-custom p-1">
                 <div class="card-header-custom bg-white text-dark d-flex justify-content-between align-items-center">
                     <span>📅 LỊCH CÔNG TÁC & DEADLINE</span>
@@ -342,7 +414,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: GIAO VIỆC (ADMIN) -->
+        <!-- TAB 3: GIAO VIỆC -->
         <div class="tab-pane fade" id="pills-input">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -354,7 +426,6 @@
                                     <label class="form-label fw-bold">Tên công việc <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="taskName" required placeholder="Nhập tên đầu việc...">
                                 </div>
-                                
                                 <div class="mb-4">
                                     <label class="form-label fw-bold">Người thực hiện</label>
                                     <select name="assignee" id="hiddenAssigneeSelect" multiple style="display:none"></select>
@@ -366,7 +437,6 @@
                                         <div class="dropdown-menu dropdown-menu-custom shadow w-100" id="checkboxContainer"></div>
                                     </div>
                                 </div>
-
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Thuộc Tổ/Bộ phận</label>
@@ -380,9 +450,8 @@
                                         </select>
                                     </div>
                                 </div>
-
                                 <div class="row g-3 mb-4">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label class="form-label fw-bold">Mức độ Ưu tiên</label>
                                         <select class="form-select" name="priority">
                                             <option value="P1">🔴 Cao (Khẩn cấp)</option>
@@ -390,20 +459,25 @@
                                             <option value="P3">🟢 Thấp</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold">Độ khó</label>
+                                        <select class="form-select" name="difficulty">
+                                            <option value="1">⭐ Dễ</option>
+                                            <option value="2" selected>⭐⭐ Trung bình</option>
+                                            <option value="3">⭐⭐⭐ Khó</option>
+                                            <option value="4">⭐⭐⭐⭐ Phức tạp</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
                                         <label class="form-label fw-bold">Hạn chót (Deadline)</label>
                                         <input type="date" class="form-control" name="deadline" id="deadlineInput">
                                     </div>
                                 </div>
-
                                 <div class="mb-4">
                                     <label class="form-label fw-bold">Ghi chú / Mô tả</label>
                                     <textarea class="form-control" name="notes" rows="3" placeholder="Chi tiết yêu cầu..."></textarea>
                                 </div>
-
-                                <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm" id="submitBtn">
-                                    💾 LƯU CÔNG VIỆC
-                                </button>
+                                <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm" id="submitBtn">💾 LƯU CÔNG VIỆC</button>
                             </form>
                         </div>
                     </div>
@@ -411,7 +485,7 @@
             </div>
         </div>
 
-        <!-- TAB 4: NỘI QUY (ADMIN) -->
+        <!-- TAB 4: NỘI QUY -->
         <div class="tab-pane fade" id="pills-compliance">
              <div class="row g-4">
                 <div class="col-md-4">
@@ -472,6 +546,51 @@
     </div>
 </div>
 
+<!-- ================= CHATBOT UI ================= -->
+<button class="chat-btn" onclick="toggleChat()" title="Chat với Lily AI">💬</button>
+
+<div class="chat-box" id="chatBox">
+    <div class="chat-header">
+        <span>🤖 Lily AI Assistant</span>
+        <button type="button" class="btn-close btn-close-white" onclick="toggleChat()"></button>
+    </div>
+    <div class="chat-body" id="chatHistory">
+        <div class="msg msg-ai">Xin chào! Em là Lily. Anh/Chị cần kiểm tra tiến độ của ai ạ?</div>
+    </div>
+    <div class="typing" id="typingIndicator">Lily đang nhập...</div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" class="form-control rounded-pill border-0 bg-light" placeholder="Nhập tin nhắn..." onkeypress="handleEnter(event)">
+        <button class="btn btn-success rounded-circle" style="width: 38px; height: 38px; padding: 0;" onclick="sendMessage()">➤</button>
+    </div>
+</div>
+
+<!-- ================= MODAL REPORT ================= -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">📤 Báo cáo Hoàn thành</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="reportTaskId">
+                <div class="alert alert-info small mb-3">
+                    <i class="bi bi-info-circle"></i> Vui lòng đính kèm minh chứng (ảnh/file) để Admin duyệt.
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold small mb-1">File đính kèm (Bắt buộc)</label>
+                    <input type="file" id="reportFile" class="form-control">
+                    <div class="form-text text-danger small" id="fileError" style="display:none">File quá lớn (>5MB) hoặc chưa chọn file.</div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success fw-bold" onclick="submitReport()">Gửi báo cáo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -504,9 +623,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="mb-3"><label class="fw-bold small">PIN Cũ:</label><input type="password" id="oldPin" class="form-control"></div>
-                <div class="mb-3"><label class="fw-bold small">PIN Mới:</label><input type="password" id="newPin" class="form-control"></div>
-                <div class="mb-3"><label class="fw-bold small">Nhập lại PIN Mới:</label><input type="password" id="confirmPin" class="form-control"></div>
+                <div class="mb-3">
+                    <label class="fw-bold small">PIN Cũ:</label>
+                    <input type="password" id="oldPin" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold small">PIN Mới:</label>
+                    <input type="password" id="newPin" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold small">Nhập lại PIN Mới:</label>
+                    <input type="password" id="confirmPin" class="form-control">
+                </div>
                 <button type="button" class="btn btn-success w-100 fw-bold mt-3" onclick="submitChangePin()">Xác nhận Đổi</button>
             </div>
         </div>
@@ -514,36 +642,31 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // URL Script Google Apps (GIỮ NGUYÊN)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxK5MlsJWyH67Ckuwa48uctGPV-otNqg8a3vgyttWm6gIg_eInJt-JpUtB1VtF_Ah40Pw/exec"; 
+    // --- CẤU HÌNH ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpnB-1XDtjg-CkchBbD8aXyu30mSPDAuxuvxj_FQcxXsF8Yvrlzvjt_GFbxz0T1JOw/exec";
     
     let globalData = [], globalCompliance = [], currentUser = null;
-
+    let chatContext = []; // Lưu lịch sử chat
     const STAFF_GROUPS = {
         "Ban Lãnh Đạo": ["Nguyễn Thị Hương Giang - Trưởng Khoa", "Trần Thị Huyền Trang - Phó Khoa"],
         "Dược sĩ": ["Phạm Bá Thương", "Lê Thị Thanh Nhàn", "Chu Đài Trang", "Nguyễn Duy Tiến", "Nguyễn Thị Hằng", "Kiều Mạnh Toàn", "Đỗ Thị Nhật Lệ", "Nguyễn Thị Thu Hà", "Hà Thị Thảo", "Nguyễn Tuấn Thành", "Vũ Thị Hồng Hạnh", "Hà Thu Trang", "Đoàn Thị Mai Hương", "Triệu Thị Vỵ"]
     };
 
-    // --- KHỞI TẠO ---
-    initUI(); 
-    loadTaskList(); 
+    initUI();
+    loadTaskList();
     checkSession();
 
     function initUI() { 
-        initCheckboxes(); 
+        initCheckboxes();
         initSingleSelect('compliancePerson');
-        initGroupSelect(); 
+        initGroupSelect();
         toggleDeadline(); 
-        
-        // Mặc định tháng hiện tại cho báo cáo
         const now = new Date();
-        const monthStr = now.toISOString().slice(0, 7); // YYYY-MM
+        const monthStr = now.toISOString().slice(0, 7);
         document.getElementById('reportMonthSelect').value = monthStr;
     }
     
-    // --- XỬ LÝ GIAO DIỆN ---
     function toggleDeadline() {
         const typeSelect = document.getElementById('taskTypeSelect');
         const dlInput = document.getElementById('deadlineInput');
@@ -565,15 +688,20 @@
     }
 
     function initCheckboxes() { 
-        const c = document.getElementById('checkboxContainer'); const h = document.getElementById('hiddenAssigneeSelect');
-        const t = document.getElementById('selectedText'); const n = document.getElementById('selectedCount');
-        c.innerHTML = ""; h.innerHTML = ""; 
+        const c = document.getElementById('checkboxContainer');
+        const h = document.getElementById('hiddenAssigneeSelect');
+        const t = document.getElementById('selectedText');
+        const n = document.getElementById('selectedCount');
+        c.innerHTML = "";
+        h.innerHTML = ""; 
         let allStaff = [];
         for(const [group, staffList] of Object.entries(STAFF_GROUPS)){ allStaff.push(...staffList); }
         allStaff = [...new Set(allStaff)];
         allStaff.forEach((name, i) => {
             h.add(new Option(name, name));
-            const d = document.createElement('div'); d.className = 'person-item'; d.onclick = function(e) { e.stopPropagation(); }
+            const d = document.createElement('div');
+            d.className = 'person-item';
+            d.onclick = function(e) { e.stopPropagation(); }
             d.innerHTML = `<input class="form-check-input me-2" type="checkbox" value="${name}" id="chk${i}"><label class="w-100" for="chk${i}">${name}</label>`;
             c.appendChild(d);
             d.querySelector('input').addEventListener('change', (e) => { h.options[i].selected = e.target.checked; updateDisplay(h, t, n); });
@@ -581,7 +709,7 @@
     }
 
     function updateDisplay(s,t,c){
-        let cnt=0,nm=[]; 
+        let cnt=0,nm=[];
         Array.from(s.options).forEach(o=>{if(o.selected){cnt++;nm.push(o.value)}});
         c.innerText=cnt;
         t.innerText=cnt===0?"-- Chọn nhân sự --":(cnt<=2?nm.join(", "):`Đã chọn ${cnt} người`);
@@ -589,17 +717,83 @@
     }
 
     function initSingleSelect(elId) { 
-        const s=document.getElementById(elId); 
+        const s=document.getElementById(elId);
         s.innerHTML='<option value="">-- Chọn nhân viên --</option>'; 
         for(const[g,ppl] of Object.entries(STAFF_GROUPS)){ 
-            const o=document.createElement('optgroup'); o.label=g; 
-            ppl.forEach(n=>o.innerHTML+=`<option value="${n}">${n}</option>`); 
+            const o=document.createElement('optgroup');
+            o.label=g; 
+            ppl.forEach(n=>o.innerHTML+=`<option value="${n}">${n}</option>`);
             s.appendChild(o); 
         } 
     }
 
+    // --- LOGIC CHATBOT ---
+    function toggleChat() {
+        if(!currentUser) {
+            alert("Vui lòng đăng nhập để chat với Lily AI!");
+            showLoginModal();
+            return;
+        }
+        const box = document.getElementById('chatBox');
+        box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'flex' : 'none';
+        if(box.style.display === 'flex') document.getElementById('chatInput').focus();
+    }
+
+    function handleEnter(e) { if(e.key === 'Enter') sendMessage(); }
+
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const historyDiv = document.getElementById('chatHistory');
+        const typing = document.getElementById('typingIndicator');
+        const question = input.value.trim();
+        
+        if(!question) return;
+
+        historyDiv.innerHTML += `<div class="msg msg-user">${question}</div>`;
+        input.value = '';
+        historyDiv.scrollTop = historyDiv.scrollHeight;
+        typing.style.display = 'block';
+
+        let historyText = chatContext.slice(-6).map(m => `${m.role}: ${m.content}`).join("\n");
+
+        fetch(SCRIPT_URL + "?action=ask_ai", {
+            method: 'POST',
+            body: JSON.stringify({ 
+                question: question,
+                history: historyText
+            })
+        })
+        .then(async r => {
+            const text = await r.text();
+            try {
+                const res = JSON.parse(text);
+                typing.style.display = 'none';
+                let answer = "";
+                if(res.status === 'success') {
+                    answer = res.answer;
+                } else {
+                    answer = "Lỗi Server: " + res.message;
+                }
+                let displayHtml = answer.replace(/\n/g, '<br>');
+                historyDiv.innerHTML += `<div class="msg msg-ai">${displayHtml}</div>`;
+            } catch(e) {
+                typing.style.display = 'none';
+                historyDiv.innerHTML += `<div class="msg msg-ai text-danger">Lỗi phản hồi: Server chưa cấp quyền hoặc API Key sai.<br>Chi tiết: ${text.substring(0, 100)}...</div>`;
+                console.error("AI Error:", text);
+            }
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+            if(chatContext.length > 0 && typeof answer !== 'undefined') chatContext.push({ role: "User", content: question });
+            if(chatContext.length > 0 && typeof answer !== 'undefined') chatContext.push({ role: "Lily", content: answer });
+        })
+        .catch(e => {
+            typing.style.display = 'none';
+            historyDiv.innerHTML += `<div class="msg msg-ai text-danger">Mất kết nối mạng!</div>`;
+        });
+    }
+
     // --- AUTHENTICATION ---
     function showLoginModal() { new bootstrap.Modal(document.getElementById('loginModal')).show(); }
+    
     function performLogin() {
         const username = document.getElementById('loginUsername').value, pin = document.getElementById('loginPin').value;
         if(!username || !pin) return alert("Vui lòng nhập đầy đủ thông tin!");
@@ -612,8 +806,11 @@
             } else alert("⛔ " + res.message);
         });
     }
+    
     function logout() { sessionStorage.removeItem('user'); currentUser = null; applyLoginState(); location.reload(); }
+    
     function checkSession() { const saved = sessionStorage.getItem('user'); if(saved) { currentUser = JSON.parse(saved); applyLoginState(); } }
+    
     function applyLoginState() {
         const isLoggedIn = !!currentUser;
         document.getElementById('btnLogin').classList.toggle('d-none', isLoggedIn);
@@ -623,16 +820,18 @@
         const isAdmin = currentUser && currentUser.role === 'Admin';
         document.querySelectorAll('.admin-only').forEach(el => el.style.setProperty("display", isAdmin ? "block" : "none", "important"));
     }
+    
     function showChangePinModal() { new bootstrap.Modal(document.getElementById('changePinModal')).show(); }
+    
     function submitChangePin() {
         const oldPin = document.getElementById('oldPin').value, newPin = document.getElementById('newPin').value, confirmPin = document.getElementById('confirmPin').value;
         if(!oldPin || !newPin) return alert("Thiếu thông tin!"); if(newPin !== confirmPin) return alert("PIN mới không khớp!");
         fetch(SCRIPT_URL + "?action=change_pin", { method: 'POST', body: JSON.stringify({ username: currentUser.username, oldPin, newPin }) }).then(r => r.json()).then(res => { alert(res.message); if(res.status === 'success') { bootstrap.Modal.getInstance(document.getElementById('changePinModal')).hide(); logout(); } });
     }
 
-    // --- DANH SÁCH & RENDER ---
+    // --- TASK LOGIC ---
     function loadTaskList() { 
-        document.getElementById('taskTableBody').innerHTML='<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-success"></div><div class="mt-2 text-muted">Đang tải dữ liệu...</div></td></tr>'; 
+        document.getElementById('taskTableBody').innerHTML='<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-success"></div><div class="mt-2 text-muted">Đang tải dữ liệu...</div></td></tr>'; 
         fetch(SCRIPT_URL).then(r=>r.json()).then(res=>{ globalData=res.data; populateFilter(); renderTable(); }); 
     }
 
@@ -641,65 +840,124 @@
         const fG = document.getElementById('filterGroup').value.toLowerCase().trim();
         const fN = document.getElementById('filterAssignee').value.toLowerCase().trim();
         const fS = document.getElementById('filterStatus').value;
+        const fD = document.getElementById('filterDifficulty').value; 
         const fT = document.getElementById('filterText').value.toLowerCase().trim();
         const today = new Date(); today.setHours(0,0,0,0);
         
+        const getEffectiveStatus = (rawSt, createdStr) => {
+            let createdDate = createdStr ? new Date(createdStr) : new Date();
+            createdDate.setHours(0,0,0,0);
+            if (rawSt === 'Todo' && createdDate < today) return 'Doing';
+            return rawSt;
+        };
+
         let flt = globalData.filter(r => {
             let group = String(r[11] || "").toLowerCase();
-            let as = String(r[7]).toLowerCase(), st = String(r[2]).trim(), nm = String(r[1]).toLowerCase();
-            return (fG === "" || group.includes(fG)) && (fN === "" || as.includes(fN)) && (fS === "" || st.toLowerCase() === fS.toLowerCase()) && (fT === "" || nm.includes(fT));
+            let as = String(r[7]).toLowerCase(), rawSt = String(r[2]).trim(), nm = String(r[1]).toLowerCase();
+            let diff = String(r[12] || ""); 
+            let st = getEffectiveStatus(rawSt, r[6]);
+            let statusMatch = true;
+            let dlRaw = r[9] || r[4];
+            let isOverdue = (dlRaw && new Date(dlRaw) < today && st !== 'Done' && st !== 'Waiting');
+
+            if (fS === 'Pending') statusMatch = (st !== 'Done' && st !== 'Waiting'); 
+            else if (fS === 'Done') statusMatch = (st === 'Done');
+            else if (fS === 'Waiting') statusMatch = (st === 'Waiting');
+            else if (fS === 'Overdue') statusMatch = isOverdue;
+
+            return (fG === "" || group.includes(fG)) && (fN === "" || as.includes(fN)) && (fD === "" || diff === fD) && statusMatch && (fT === "" || nm.includes(fT));
         });
         
-        // Sort: Group -> Done/Todo -> Date
         flt.sort((a, b) => {
             const grpA = (a[11] || "").toLowerCase(), grpB = (b[11] || "").toLowerCase(); if (grpA < grpB) return -1; if (grpA > grpB) return 1;
-            const statusA = String(a[2]).trim(), statusB = String(b[2]).trim();
+            const statusA = getEffectiveStatus(String(a[2]).trim(), a[6]);
+            const statusB = getEffectiveStatus(String(b[2]).trim(), b[6]);
+            if (statusA === 'Waiting' && statusB !== 'Waiting') return -1; if (statusA !== 'Waiting' && statusB === 'Waiting') return 1;
             const doneA = statusA === 'Done', doneB = statusB === 'Done'; if (doneA && !doneB) return 1; if (!doneA && doneB) return -1;
             const dateA = new Date(a[9] || a[4] || '9999-12-31'); const dateB = new Date(b[9] || b[4] || '9999-12-31'); return dateA - dateB;
         });
         
-        if(flt.length === 0) { tb.innerHTML='<tr><td colspan="6" class="text-center text-muted py-4">Không tìm thấy công việc nào.</td></tr>'; return; }
+        if(flt.length === 0) { tb.innerHTML='<tr><td colspan="7" class="text-center text-muted py-4">Không tìm thấy công việc nào.</td></tr>'; return; }
 
         flt.forEach(r => {
-            let id = r[0], name = r[1], status = String(r[2]).trim(), assignee = r[7];
+            let id = r[0], name = r[1], rawStatus = String(r[2]).trim(), assignee = r[7];
             let type = r[10] || "Thường quy", group = r[11] || ""; 
+            let difficulty = r[12] || ""; 
+            let status = getEffectiveStatus(rawStatus, r[6]);
             let dlRaw = r[9] || r[4], dlDisp = dlRaw ? new Date(dlRaw).toLocaleDateString('vi-VN') : '';
+            let fileUrl = r[13] || ""; // Cột N (Index 13) lưu file
+
             let prog = parseProgress(r[8]);
-            
             let isOwner = currentUser && (currentUser.role === 'Admin' || assignee.includes(currentUser.name));
             let disableControl = isOwner ? "" : "pointer-events: none; opacity: 0.6;";
-            
             let isOverdue = false;
-            if (dlRaw && new Date(dlRaw) < today && status !== 'Done') isOverdue = true;
+            if (dlRaw && new Date(dlRaw) < today && status !== 'Done' && status !== 'Waiting') isOverdue = true;
 
-            // HTML Elements
-            let badgeClass = status === 'Done' ? 'bg-done' : (isOverdue ? 'bg-overdue' : (status === 'Doing' ? 'bg-doing' : 'bg-todo'));
-            let statusText = isOverdue ? 'Quá hạn' : (status==='Todo'?'Chưa làm':status);
+            let badgeClass = '';
+            let statusText = status;
             
-            let dlHtml = dlDisp;
-            if (r[9] && r[9] !== r[4]) dlHtml = `<span class="deadline-original">${new Date(r[4]).toLocaleDateString('vi-VN')}</span><br><span class="deadline-extended">↳ ${dlDisp}</span>`;
-            if (isOverdue) dlHtml = `<span class="text-danger fw-bold">⚠️ ${dlHtml}</span>`;
+            if (status === 'Done') { badgeClass = 'bg-done'; statusText = 'Hoàn thành'; }
+            else if (status === 'Waiting') { badgeClass = 'bg-waiting'; statusText = 'Chờ duyệt'; }
+            else if (isOverdue) { badgeClass = 'bg-overdue'; statusText = 'Quá hạn'; }
+            else if (status === 'Doing') { badgeClass = 'bg-doing'; statusText = 'Đang làm'; }
+            else { badgeClass = 'bg-todo'; statusText = 'Mới tạo'; }
+
+            let dlHtml = '';
+            if (!dlRaw || type === 'Thường quy') {
+                 dlHtml = '<span class="badge bg-light text-secondary border">🔄 Thường quy</span>';
+            } else {
+                dlHtml = dlDisp;
+                if (r[9] && r[9] !== r[4]) dlHtml = `<span class="deadline-original">${new Date(r[4]).toLocaleDateString('vi-VN')}</span><br><span class="deadline-extended">↳ ${dlDisp}</span>`;
+                if (isOverdue) dlHtml = `<span class="text-danger fw-bold">⚠️ ${dlHtml}</span>`;
+            }
 
             let slider = status === 'Done' 
                 ? `<div class="progress" style="height:8px;"><div class="progress-bar bg-success" style="width:100%"></div></div><small class="text-success fw-bold">100%</small>` 
                 : `<div class="d-flex align-items-center" style="${disableControl}"><input type="range" class="form-range me-2" style="width:80px" min="0" max="100" step="10" value="${prog}" onchange="updateProgress('${id}',this.value)"><span class="badge bg-light text-dark border" id="val-${id}">${prog}%</span></div>`;
 
-            let actionBtns = status !== 'Done' 
-                ? `<div class="btn-action-group" style="${disableControl}">
-                    <button class="btn btn-sm btn-outline-success w-100 mb-1" onclick="markDone('${id}')" title="Hoàn thành">✅ Xong</button>
-                    <button class="btn btn-sm btn-outline-warning w-100 text-dark" onclick="sendEmailBackend('${id}','${name}','${assignee}','${dlRaw}')" title="Gửi mail nhắc">📧 Nhắc</button>
-                   </div>` 
-                : '<span class="text-success fw-bold">✔ Hoàn tất</span>';
+            // --- LOGIC PHÂN QUYỀN NÚT BẤM ---
+            let actionBtns = '';
+            let attachLink = fileUrl ? `<div class="mb-1"><a href="${fileUrl}" target="_blank" class="badge bg-info text-decoration-none">📎 Xem File</a></div>` : '';
 
-            let groupBadge = group ? `<span class="badge bg-secondary mb-1" style="font-size:0.7em">${group}</span><br>` : '';
+            if (status === 'Done') {
+                actionBtns = '<span class="text-success fw-bold">✔ Hoàn tất</span>';
+            } else if (status === 'Waiting') {
+                actionBtns = attachLink;
+                if (currentUser && currentUser.role === 'Admin') {
+                    // Admin: Duyệt hoặc Từ chối
+                    actionBtns += `
+                    <div class="d-flex gap-1 justify-content-center">
+                        <button class="btn btn-sm btn-success" onclick="approveTask('${id}')" title="Duyệt">✅ Duyệt</button>
+                        <button class="btn btn-sm btn-danger" onclick="rejectTask('${id}')" title="Từ chối">❌</button>
+                    </div>`;
+                } else {
+                    // Member: Chờ
+                    actionBtns += `<span class="text-muted fst-italic small">⏳ Đang chờ duyệt...</span>`;
+                }
+            } else {
+                // Todo, Doing, Overdue
+                if (currentUser && currentUser.role === 'Admin') {
+                    actionBtns = `<button class="btn btn-sm btn-outline-success w-100 mb-1" onclick="approveTask('${id}')">✅ Duyệt ngay</button>`;
+                } else {
+                    actionBtns = `<div class="btn-action-group" style="${disableControl}">
+                        <button class="btn btn-sm btn-outline-primary w-100 mb-1" onclick="openReportModal('${id}')">📩 Báo cáo</button>
+                        <button class="btn btn-sm btn-outline-warning w-100 text-dark" onclick="sendEmailBackend('${id}','${name}','${assignee}','${dlRaw}')">📧 Nhắc</button>
+                    </div>`;
+                }
+            }
 
-            tb.innerHTML += `
-            <tr class="${isOverdue ? 'table-danger' : ''}">
-                <td>
-                    ${groupBadge}
-                    <span class="fw-bold text-dark">${name}</span>
-                    <div class="text-muted small mt-1"><em>${r[5] || ''}</em></div>
-                </td>
+            let groupBadge = group ? `<span class="badge bg-secondary mb-1" style="font-size:0.7em">${group}</span>` : '';
+            let diffHtml = '<span class="text-muted small">-</span>';
+            if(difficulty) {
+                if(difficulty == '1') diffHtml = '<span class="badge-diff diff-easy">⭐ Dễ</span>';
+                else if(difficulty == '2') diffHtml = '<span class="badge-diff diff-medium">⭐⭐ TB</span>';
+                else if(difficulty == '3') diffHtml = '<span class="badge-diff diff-hard">⭐⭐⭐ Khó</span>';
+                else if(difficulty == '4') diffHtml = '<span class="badge-diff diff-complex">⭐⭐⭐⭐ Phức tạp</span>';
+            }
+
+            tb.innerHTML += `<tr class="${isOverdue ? 'table-danger' : ''}">
+                <td>${groupBadge} <span class="fw-bold text-dark">${name}</span><div class="text-muted small mt-1"><em>${r[5] || ''}</em></div></td>
+                <td class="text-center">${diffHtml}</td>
                 <td>${slider}</td>
                 <td><small class="fw-bold text-primary">${assignee}</small></td>
                 <td class="small">${dlHtml}</td>
@@ -709,32 +967,121 @@
         });
     }
     
-    // --- HELPER FUNCTIONS ---
     function parseProgress(val) { if(!val)return 0; let s=String(val).replace(/^'/,'').replace('%','').trim(); let n=parseFloat(s); return isNaN(n)?0:(n<=1&&n>0&&s.includes('.')?Math.round(n*100):Math.round(n)); }
-    function populateFilter() { 
-        const s = document.getElementById('filterAssignee'); s.innerHTML = '<option value="">Tất cả</option>'; 
-        let a = []; globalData.forEach(r => a.push(...String(r[7]).split(',').map(v => v.trim()).filter(v => v))); 
-        [...new Set(a)].sort().forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`); 
-    }
+    function populateFilter() { const s = document.getElementById('filterAssignee'); s.innerHTML = '<option value="">Tất cả</option>'; let a = []; globalData.forEach(r => a.push(...String(r[7]).split(',').map(v => v.trim()).filter(v => v))); [...new Set(a)].sort().forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`); }
 
-    // --- ACTIONS ---
     function updateProgress(id, v) { 
         if(!currentUser) return alert("Vui lòng đăng nhập!"); 
+        if(v == 100 && currentUser.role !== 'Admin') {
+            if(confirm("Bạn muốn báo cáo hoàn thành công việc này?")) {
+                openReportModal(id);
+                document.getElementById(`val-${id}`).innerText='100%'; 
+                return;
+            } else {
+                v = 90; 
+            }
+        }
         document.getElementById(`val-${id}`).innerText=v+'%'; 
         fetch(SCRIPT_URL+"?action=update_progress",{method:'POST',body:JSON.stringify({id:id,progress:v, user_fullname: currentUser.name, role: currentUser.role})})
-        .then(r=>r.json()).then(res=>{if(res.status==='error'){alert(res.message); loadTaskList();} else if(v==100)loadTaskList()}); 
+        .then(r=>r.json()).then(res=>{if(res.status==='error'){alert(res.message); loadTaskList();} else if(v==100 && currentUser.role === 'Admin') loadTaskList()}); 
     }
     
-    function markDone(id) { 
-        if(!currentUser) return alert("Vui lòng đăng nhập!"); 
-        if(confirm('Xác nhận hoàn thành công việc?')) 
-            fetch(SCRIPT_URL+"?action=update",{method:'POST',body:JSON.stringify({id:id, user_fullname: currentUser.name, role: currentUser.role})}).then(r=>r.json()).then(res=>{alert(res.message);loadTaskList()}); 
+    // --- REPORT LOGIC MỚI ---
+    function openReportModal(id) {
+        if(!currentUser) return alert("Vui lòng đăng nhập!");
+        document.getElementById('reportTaskId').value = id;
+        document.getElementById('reportFile').value = '';
+        document.getElementById('fileError').style.display = 'none';
+        new bootstrap.Modal(document.getElementById('reportModal')).show();
+    }
+
+    function submitReport() {
+        const id = document.getElementById('reportTaskId').value;
+        const fileInput = document.getElementById('reportFile');
+        const file = fileInput.files[0];
+        const btn = event.target;
+
+        if(!file) {
+            document.getElementById('fileError').style.display = 'block';
+            return;
+        }
+        if(file.size > 5 * 1024 * 1024) { // 5MB limit
+            alert("File quá lớn! Vui lòng chọn file < 5MB.");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Đang gửi...";
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result;
+            const payload = {
+                id: id,
+                user_fullname: currentUser.name,
+                fileName: file.name,
+                mimeType: file.type,
+                fileData: base64Data
+            };
+
+            fetch(SCRIPT_URL + "?action=report_done", {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(async r => {
+                const text = await r.text();
+                try {
+                    const res = JSON.parse(text);
+                    if(res.status === 'success') {
+                        alert(res.message);
+                        bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+                        loadTaskList();
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                } catch(e) {
+                    console.error("Report Error:", text);
+                    alert("Lỗi gửi báo cáo: Server phản hồi không đúng định dạng. Vui lòng cấp quyền DriveApp.");
+                }
+            })
+            .catch(err => {
+                alert("Lỗi kết nối: " + err);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerText = "Gửi báo cáo";
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function approveTask(id) {
+        if(!currentUser || currentUser.role !== 'Admin') return alert("⛔ Chỉ Admin mới được duyệt!");
+        if(!confirm('Duyệt hoàn thành công việc này?')) return;
+
+        fetch(SCRIPT_URL + "?action=approve_done", {
+            method: 'POST',
+            body: JSON.stringify({id: id, role: currentUser.role})
+        })
+        .then(r => r.json())
+        .then(res => { alert(res.message); loadTaskList(); });
+    }
+
+    function rejectTask(id) {
+        if(!currentUser || currentUser.role !== 'Admin') return alert("⛔ Chỉ Admin mới được quyền này!");
+        if(!confirm('Từ chối báo cáo này và yêu cầu làm lại?')) return;
+
+        fetch(SCRIPT_URL + "?action=reject_done", {
+            method: 'POST',
+            body: JSON.stringify({id: id, role: currentUser.role})
+        })
+        .then(r => r.json())
+        .then(res => { alert(res.message); loadTaskList(); });
     }
     
     function sendEmailBackend(id,t,p,d){ 
         if(!confirm(`Gửi mail nhắc nhở cho ${p}?`))return; 
-        let dl=d?new Date(d).toLocaleDateString('vi-VN'):'Sớm nhất'; 
-        const btn=event.target; const txt=btn.innerText; btn.innerText="⏳..."; btn.disabled=true; 
+        let dl=d?new Date(d).toLocaleDateString('vi-VN'):'Sớm nhất'; const btn=event.target; const txt=btn.innerText; btn.innerText="⏳..."; btn.disabled=true; 
         fetch(SCRIPT_URL+"?action=send_email_manual",{method:'POST',body:JSON.stringify({taskName:t,assignee:p,deadline:dl})})
         .then(r=>r.json()).then(res=>{alert(res.message)}).finally(()=>{btn.innerText=txt;btn.disabled=false}); 
     }
@@ -749,29 +1096,19 @@
         .then(r=>r.json()).then(res=>alert(res.message)).finally(()=>{btn.innerText=t;btn.disabled=false}); 
     }
 
-    // --- FORM SUBMIT ---
     document.getElementById('taskForm').addEventListener('submit', e => { 
         e.preventDefault(); 
         if(!currentUser||currentUser.role!=='Admin'){alert("⛔ Chỉ Admin!");return;} 
         const btn=document.getElementById('submitBtn'); btn.disabled=true; btn.innerText = "⏳ Đang lưu...";
         const d=Object.fromEntries(new FormData(e.target).entries()); 
-        d.assignee=Array.from(document.getElementById('hiddenAssigneeSelect').selectedOptions).map(o=>o.value).join(', '); 
-        d.role=currentUser.role; 
+        d.assignee=Array.from(document.getElementById('hiddenAssigneeSelect').selectedOptions).map(o=>o.value).join(', '); d.role=currentUser.role; 
         fetch(SCRIPT_URL+"?action=add",{method:'POST',body:JSON.stringify(d)}).then(r=>r.json()).then(res=>{ 
-            alert(res.message); 
-            if(res.status==='success'){
-                e.target.reset(); 
-                document.querySelectorAll('#checkboxContainer input').forEach(c=>c.checked=false); 
-                updateDisplay(document.getElementById('hiddenAssigneeSelect'),document.getElementById('selectedText'),document.getElementById('selectedCount')); 
-                document.querySelector('[data-bs-target="#pills-list"]').click(); 
-                loadTaskList();
-            } 
+            alert(res.message); if(res.status==='success'){ e.target.reset(); document.querySelectorAll('#checkboxContainer input').forEach(c=>c.checked=false); updateDisplay(document.getElementById('hiddenAssigneeSelect'),document.getElementById('selectedText'),document.getElementById('selectedCount')); document.querySelector('[data-bs-target="#pills-list"]').click(); loadTaskList(); } 
         }).finally(()=>{btn.disabled=false; btn.innerText = "💾 LƯU CÔNG VIỆC";}); 
     });
 
     document.getElementById('complianceForm').addEventListener('submit', e => { 
-        e.preventDefault(); 
-        if(!currentUser||currentUser.role!=='Admin'){alert("⛔ Chỉ Admin!");return;} 
+        e.preventDefault(); if(!currentUser||currentUser.role!=='Admin'){alert("⛔ Chỉ Admin!");return;} 
         const btn=document.getElementById('btnCompliance'); btn.disabled=true; 
         const d=Object.fromEntries(new FormData(e.target).entries()); d.role=currentUser.role; 
         fetch(SCRIPT_URL+"?action=add_compliance",{method:'POST',body:JSON.stringify(d)}).then(r=>r.json()).then(res=>{ 
@@ -779,12 +1116,10 @@
         }).finally(()=>{btn.disabled=false;}); 
     });
 
-    // --- COMPLIANCE ---
     function loadCompliance(){
         const tb=document.getElementById('complianceBody');tb.innerHTML='<tr><td colspan="5" class="text-center">Loading...</td></tr>'; 
         fetch(SCRIPT_URL+"?action=read_compliance").then(r=>r.json()).then(res=>{ 
-            globalCompliance = res.data || []; 
-            tb.innerHTML=""; 
+            globalCompliance = res.data || []; tb.innerHTML=""; 
             if(!res.data||!res.data.length){tb.innerHTML='<tr><td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td></tr>';return;} 
             res.data.reverse().forEach(r=>{ 
                 let h=r.length>=6,t=h?r[3]:(r[3].includes("Khen")?"Khen thưởng":"Vi phạm"),c=h?r[4]:r[3],n=h?r[5]:r[4];
@@ -794,219 +1129,68 @@
         }); 
     }
 
-    // --- CHARTS & REPORT ---
     google.charts.load('current',{'packages':['corechart','bar']});
-
     function loadDashboard() { 
-        if(SCRIPT_URL.includes("DÁN_LINK")) return; 
         document.getElementById('calendar').innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary"></div></div>';
-        Promise.all([
-            fetch(SCRIPT_URL).then(r=>r.json()), 
-            fetch(SCRIPT_URL+"?action=read_compliance").then(r=>r.json())
-        ]).then(([taskRes, compRes]) => { 
-            globalData = taskRes.data || [];
-            globalCompliance = compRes.data || [];
-            updateReport(); 
+        Promise.all([fetch(SCRIPT_URL).then(r=>r.json()), fetch(SCRIPT_URL+"?action=read_compliance").then(r=>r.json())]).then(([taskRes, compRes]) => { 
+            globalData = taskRes.data || []; globalCompliance = compRes.data || []; updateReport(); 
         }); 
     }
 
     function updateReport() {
-        const monthStr = document.getElementById('reportMonthSelect').value; 
-        if (!monthStr) return;
+        const monthStr = document.getElementById('reportMonthSelect').value; if (!monthStr) return;
         const [year, month] = monthStr.split('-').map(Number);
-        const startOfMonth = new Date(year, month - 1, 1);
-        const endOfMonth = new Date(year, month, 0, 23, 59, 59);
-        const today = new Date(); today.setHours(0,0,0,0);
-
-        // Filter Logic
-        const filteredTasks = globalData.filter(r => {
-            const created = new Date(r[6]);
-            let deadline = r[9] ? new Date(r[9]) : (r[4] ? new Date(r[4]) : new Date());
-            return created <= endOfMonth && deadline >= startOfMonth;
-        });
-        const filteredCompliance = globalCompliance.filter(r => {
-            const date = new Date(r[1]); return date >= startOfMonth && date <= endOfMonth;
-        });
-
-        drawCharts(filteredTasks, filteredCompliance);
-        renderCal(filteredTasks, filteredCompliance, today);
+        const startOfMonth = new Date(year, month - 1, 1); const endOfMonth = new Date(year, month, 0, 23, 59, 59); const today = new Date(); today.setHours(0,0,0,0);
+        const filteredTasks = globalData.filter(r => { const created = new Date(r[6]); let deadline = r[9] ? new Date(r[9]) : (r[4] ? new Date(r[4]) : new Date()); return created <= endOfMonth && deadline >= startOfMonth; });
+        const filteredCompliance = globalCompliance.filter(r => { const date = new Date(r[1]); return date >= startOfMonth && date <= endOfMonth; });
+        drawCharts(filteredTasks, filteredCompliance); renderCal(filteredTasks, filteredCompliance, today);
     }
 
     function drawCharts(t,c) { 
-        var stats = {'Done': 0, 'Doing': 0, 'Overdue': 0};
-        var p = {}; 
-        var today = new Date(); today.setHours(0,0,0,0);
-
+        var stats = {'Done': 0, 'Doing': 0, 'Overdue': 0}; var diffStats = {'1': 0, '2': 0, '3': 0, '4': 0, 'Unknown': 0}; var p = {}; var today = new Date(); today.setHours(0,0,0,0);
         t.forEach(r => {
-            let status = String(r[2]).trim();
-            let dlRaw = r[9] || r[4];
-            let dl = dlRaw ? new Date(dlRaw) : null;
-            let isOverdue = (status !== 'Done' && dl && dl < today);
-
-            String(r[7]).split(',').forEach(n=>{ 
-                n=n.trim(); 
-                if(n){ 
-                    if(!p[n]) p[n] = { done: 0, overdue: 0, normal: 0 };
-                    if (status === 'Done') p[n].done++;
-                    else if (isOverdue) p[n].overdue++;
-                    else p[n].normal++;
-                }
-            });
-
-            if (status === 'Done') stats.Done++;
-            else if (isOverdue) stats.Overdue++;
-            else stats.Doing++;
+            let status = String(r[2]).trim(); let dlRaw = r[9] || r[4]; let dl = dlRaw ? new Date(dlRaw) : null; let isOverdue = (status !== 'Done' && dl && dl < today); let diff = r[12] || 'Unknown';
+            if (status === 'Done') stats.Done++; else if (isOverdue) stats.Overdue++; else stats.Doing++;
+            if (diffStats[diff] !== undefined) diffStats[diff]++; else diffStats['Unknown']++;
+            String(r[7]).split(',').forEach(n=>{ n=n.trim(); if(n){ if(!p[n]) p[n] = { done: 0, overdue: 0, normal: 0 }; if (status === 'Done') p[n].done++; else if (isOverdue) p[n].overdue++; else p[n].normal++; } });
         }); 
-        
-        var pieData = google.visualization.arrayToDataTable([
-            ['Trạng thái', 'Số lượng'],
-            ['Đã xong', stats.Done],
-            ['Đang làm', stats.Doing],
-            ['Quá hạn', stats.Overdue]
-        ]);
-        new google.visualization.PieChart(document.getElementById('piechart_task')).draw(pieData, {
-            colors: ['#198754', '#0dcaf0', '#dc3545'], is3D: false, pieHole: 0.4, legend: {position: 'bottom'}, chartArea:{width:'90%',height:'80%'}
-        }); 
-        
-        var arr = [['Nhân viên', 'Đã xong', 'Đang làm', 'Quá hạn']];
-        Object.keys(p).sort().forEach(k => { arr.push([k, p[k].done, p[k].normal, p[k].overdue]); });
-        if(arr.length > 1) {
-            new google.visualization.ColumnChart(document.getElementById('barchart_task')).draw(google.visualization.arrayToDataTable(arr),{
-                isStacked: true, colors: ['#198754', '#0dcaf0', '#dc3545'], legend: { position: 'bottom' }, chartArea: {width:'85%', height:'70%'}
-            }); 
-        }
-
-        // Compliance Charts
+        var pieData = google.visualization.arrayToDataTable([['Trạng thái', 'Số lượng'],['Đã xong', stats.Done],['Đang làm', stats.Doing],['Quá hạn', stats.Overdue]]);
+        new google.visualization.PieChart(document.getElementById('piechart_task')).draw(pieData, { colors: ['#198754', '#0dcaf0', '#dc3545'], is3D: false, pieHole: 0.4, legend: {position: 'bottom'}, chartArea:{width:'90%',height:'80%'} }); 
+        var diffData = google.visualization.arrayToDataTable([['Độ khó', 'Số lượng'],['Dễ', diffStats['1']],['Trung bình', diffStats['2']],['Khó', diffStats['3']],['Phức tạp', diffStats['4']]]);
+        new google.visualization.PieChart(document.getElementById('piechart_difficulty')).draw(diffData, { colors: ['#a3cfbb', '#ffe5d0', '#f5c2c7', '#e0cffc'], is3D: false, pieHole: 0.4, legend: {position: 'bottom'}, chartArea:{width:'90%',height:'80%'} });
+        var arr = [['Nhân viên', 'Đã xong', 'Đang làm', 'Quá hạn']]; Object.keys(p).sort().forEach(k => { arr.push([k, p[k].done, p[k].normal, p[k].overdue]); });
+        if(arr.length > 1) new google.visualization.ColumnChart(document.getElementById('barchart_task')).draw(google.visualization.arrayToDataTable(arr),{ isStacked: true, colors: ['#198754', '#0dcaf0', '#dc3545'], legend: { position: 'bottom' }, chartArea: {width:'85%', height:'70%'} }); 
         var pc={}; c.forEach(r=>{let n=r[2],h=r.length>=6,tp=h?r[3]:(r[3].includes("Khen")?"Khen":"Vi phạm");if(!pc[n])pc[n]=0;if(!tp.includes("Khen"))pc[n]++;}); 
         var ac=[['NV','Vi phạm',{role:"style"}]]; Object.keys(pc).sort().forEach(k=>{if(pc[k]>0)ac.push([k,pc[k],'#dc3545']);}); 
-        if(ac.length>1) new google.visualization.ColumnChart(document.getElementById('columnchart_violation')).draw(google.visualization.arrayToDataTable(ac),{legend:'none',chartArea:{width:'85%',height:'70%'}}); 
-        else document.getElementById('columnchart_violation').innerHTML="<div class='d-flex align-items-center justify-content-center h-100 text-muted'>Trống</div>";
-        
+        if(ac.length>1) new google.visualization.ColumnChart(document.getElementById('columnchart_violation')).draw(google.visualization.arrayToDataTable(ac),{legend:'none',chartArea:{width:'85%',height:'70%'}}); else document.getElementById('columnchart_violation').innerHTML="<div class='d-flex align-items-center justify-content-center h-100 text-muted'>Trống</div>";
         var pr={}; c.forEach(r=>{let n=r[2],h=r.length>=6,tp=h?r[3]:(r[3].includes("Khen")?"Khen":"Vi phạm");if(!pr[n])pr[n]=0;if(tp.includes("Khen"))pr[n]++;}); 
         var ar=[['NV','Khen thưởng',{role:"style"}]]; Object.keys(pr).sort().forEach(k=>{if(pr[k]>0)ar.push([k,pr[k],'#ffc107']);}); 
-        if(ar.length>1) new google.visualization.ColumnChart(document.getElementById('columnchart_reward')).draw(google.visualization.arrayToDataTable(ar),{legend:'none',chartArea:{width:'85%',height:'70%'}});
-        else document.getElementById('columnchart_reward').innerHTML="<div class='d-flex align-items-center justify-content-center h-100 text-muted'>Trống</div>";
+        if(ar.length>1) new google.visualization.ColumnChart(document.getElementById('columnchart_reward')).draw(google.visualization.arrayToDataTable(ar),{legend:'none',chartArea:{width:'85%',height:'70%'}}); else document.getElementById('columnchart_reward').innerHTML="<div class='d-flex align-items-center justify-content-center h-100 text-muted'>Trống</div>";
     }
 
-    // 🔥 LOGIC LỊCH MỚI: Màu sắc theo Deadline
     function renderCal(t, c, today) { 
         var ev=[]; 
-        
         t.forEach(r => {
-            let dlRaw = r[9]||r[4];
-            if(!dlRaw) return; // Bỏ qua nếu không có deadline
-            
-            let status = String(r[2]).trim();
-            let dlDate = new Date(dlRaw);
-            let isOverdue = (dlDate < today && status !== 'Done');
-            
-            // Logic màu sắc
-            let bgColor, borderColor;
-            if (status === 'Done') {
-                bgColor = '#198754'; // Xanh lá
-                borderColor = '#198754';
-            } else if (isOverdue) {
-                bgColor = '#dc3545'; // Đỏ (Quá hạn)
-                borderColor = '#dc3545';
-            } else {
-                bgColor = '#0d6efd'; // Xanh dương (Sắp tới)
-                borderColor = '#0d6efd';
-            }
-
-            ev.push({
-                title: `${status === 'Done' ? '✔' : (isOverdue ? '⚠️' : '⏳')} ${r[1]} (${r[7]})`,
-                start: dlDate.toISOString().split('T')[0],
-                backgroundColor: bgColor,
-                borderColor: borderColor,
-                textColor: 'white',
-                extendedProps: {
-                    description: `Trạng thái: ${status}\nGhi chú: ${r[5]||'Không'}`
-                }
-            });
+            let dlRaw = r[9]||r[4]; if(!dlRaw) return; 
+            let status = String(r[2]).trim(); let dlDate = new Date(dlRaw); let isOverdue = (dlDate < today && status !== 'Done');
+            let bgColor, borderColor; if (status === 'Done') { bgColor = '#198754'; borderColor = '#198754'; } else if (isOverdue) { bgColor = '#dc3545'; borderColor = '#dc3545'; } else { bgColor = '#0d6efd'; borderColor = '#0d6efd'; }
+            ev.push({ title: `${status === 'Done' ? '✔' : (isOverdue ? '⚠️' : '⏳')} ${r[1]} (${r[7]})`, start: dlDate.toISOString().split('T')[0], backgroundColor: bgColor, borderColor: borderColor, textColor: 'white', extendedProps: { description: `Trạng thái: ${status}\nGhi chú: ${r[5]||'Không'}` } });
         }); 
-
-        c.forEach(r => {
-            if(!r[1]) return;
-            let h=r.length>=6, tp=h?r[3]:(r[3].includes("Khen")?"Khen":"Vi phạm");
-            let isReward = tp.includes("Khen");
-            ev.push({
-                title: isReward ? `🏆 ${r[2]}` : `⛔ ${r[2]}`,
-                start: new Date(r[1]).toISOString().split('T')[0],
-                backgroundColor: isReward ? '#ffc107' : '#212529',
-                borderColor: isReward ? '#ffc107' : '#212529',
-                textColor: isReward ? 'black' : 'white',
-                extendedProps: { description: h ? r[4] : r[3] }
-            });
-        }); 
-
-        var calEl = document.getElementById('calendar');
-        calEl.innerHTML = ""; // Clear cũ
-        var cal = new FullCalendar.Calendar(calEl, {
-            initialView: 'dayGridMonth',
-            locale: 'vi',
-            height: 'auto',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,listMonth'
-            },
-            buttonText: {
-                today: 'Hôm nay',
-                month: 'Lịch tháng',
-                list: 'Danh sách'
-            },
-            events: ev,
-            eventClick: function(i) {
-                alert(`📌 ${i.event.title}\nℹ️ ${i.event.extendedProps.description || ''}`);
-            }
-        }); 
-        cal.render(); 
+        c.forEach(r => { if(!r[1]) return; let h=r.length>=6, tp=h?r[3]:(r[3].includes("Khen")?"Khen":"Vi phạm"); let isReward = tp.includes("Khen"); ev.push({ title: isReward ? `🏆 ${r[2]}` : `⛔ ${r[2]}`, start: new Date(r[1]).toISOString().split('T')[0], backgroundColor: isReward ? '#ffc107' : '#212529', borderColor: isReward ? '#ffc107' : '#212529', textColor: isReward ? 'black' : 'white', extendedProps: { description: h ? r[4] : r[3] } }); }); 
+        var calEl = document.getElementById('calendar'); calEl.innerHTML = ""; 
+        var cal = new FullCalendar.Calendar(calEl, { initialView: 'dayGridMonth', locale: 'vi', height: 'auto', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' }, buttonText: { today: 'Hôm nay', month: 'Lịch tháng', list: 'Danh sách' }, events: ev, eventClick: function(i) { alert(`📌 ${i.event.title}\nℹ️ ${i.event.extendedProps.description || ''}`); } }); cal.render(); 
     }
 
     function exportExcelReport() {
-        const monthStr = document.getElementById('reportMonthSelect').value;
-        const [year, month] = monthStr.split('-').map(Number);
-        const startOfMonth = new Date(year, month - 1, 1);
-        const endOfMonth = new Date(year, month, 0, 23, 59, 59);
-
-        const taskData = globalData
-            .filter(r => {
-                const created = new Date(r[6]);
-                let deadline = r[9] ? new Date(r[9]) : (r[4] ? new Date(r[4]) : new Date());
-                return created <= endOfMonth && deadline >= startOfMonth;
-            })
-            .map(r => ({
-                "Tên công việc": r[1],
-                "Tổ": r[11] || "",
-                "Người thực hiện": r[7],
-                "Trạng thái": r[2],
-                "Ngày tạo": new Date(r[6]).toLocaleDateString('vi-VN'),
-                "Deadline": r[9] ? new Date(r[9]).toLocaleDateString('vi-VN') : (r[4] ? new Date(r[4]).toLocaleDateString('vi-VN') : ""),
-                "Tiến độ": r[8] + "%",
-                "Ghi chú": r[5]
-            }));
-
-        const complianceData = globalCompliance
-            .filter(r => {
-                const date = new Date(r[1]); return date >= startOfMonth && date <= endOfMonth;
-            })
-            .map(r => {
-                let h=r.length>=6;
-                return {
-                    "Ngày": new Date(r[1]).toLocaleDateString('vi-VN'),
-                    "Nhân viên": r[2],
-                    "Loại": h?r[3]:(r[3].includes("Khen")?"Khen thưởng":"Vi phạm"),
-                    "Nội dung": h?r[4]:r[3],
-                    "Ghi chú": h?r[5]:r[4]
-                };
-            });
-
+        const monthStr = document.getElementById('reportMonthSelect').value; const [year, month] = monthStr.split('-').map(Number);
+        const startOfMonth = new Date(year, month - 1, 1); const endOfMonth = new Date(year, month, 0, 23, 59, 59);
+        const taskData = globalData.filter(r => { const created = new Date(r[6]); let deadline = r[9] ? new Date(r[9]) : (r[4] ? new Date(r[4]) : new Date()); return created <= endOfMonth && deadline >= startOfMonth; })
+            .map(r => ({ "Tên công việc": r[1], "Tổ": r[11] || "", "Người thực hiện": r[7], "Trạng thái": r[2], "Ngày tạo": new Date(r[6]).toLocaleDateString('vi-VN'), "Deadline": r[9] ? new Date(r[9]).toLocaleDateString('vi-VN') : (r[4] ? new Date(r[4]).toLocaleDateString('vi-VN') : ""), "Tiến độ": r[8] + "%", "Ghi chú": r[5] }));
+        const complianceData = globalCompliance.filter(r => { const date = new Date(r[1]); return date >= startOfMonth && date <= endOfMonth; })
+            .map(r => { let h=r.length>=6; return { "Ngày": new Date(r[1]).toLocaleDateString('vi-VN'), "Nhân viên": r[2], "Loại": h?r[3]:(r[3].includes("Khen")?"Khen thưởng":"Vi phạm"), "Nội dung": h?r[4]:r[3], "Ghi chú": h?r[5]:r[4] }; });
         const wb = XLSX.utils.book_new();
-        if (taskData.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(taskData), "CongViec");
-        else XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{"Note": "Không có dữ liệu"}]), "CongViec");
-        
+        if (taskData.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(taskData), "CongViec"); else XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{"Note": "Không có dữ liệu"}]), "CongViec");
         if (complianceData.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(complianceData), "NoiQuy");
-        
         XLSX.writeFile(wb, `BaoCao_KhoaDuoc_${monthStr}.xlsx`);
     }
 </script>
