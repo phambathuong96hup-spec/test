@@ -1,0 +1,184 @@
+/* ===== Repair Request Page — Full-width layout matching Transfers ===== */
+
+.repair-request-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mobile-friendly-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.device-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background-color: rgba(239, 68, 68, 0.05);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.device-summary-icon {
+  width: 48px;
+  height: 48px;
+  background-color: white;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--danger);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.device-summary-info h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.device-summary-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.priority-options {
+  display: flex;
+  gap: 16px;
+}
+
+.radio-card {
+  flex: 1;
+  position: relative;
+}
+
+.radio-card input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+  font-weight: 500;
+}
+
+.radio-card input:checked + .radio-label {
+  border-color: var(--primary);
+  background-color: rgba(13, 148, 136, 0.05);
+  color: var(--primary-dark);
+}
+
+.radio-card.urgent input:checked + .radio-label {
+  border-color: var(--danger);
+  background-color: rgba(220, 53, 69, 0.05);
+  color: var(--danger);
+}
+
+textarea.input-field {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+.photo-upload-btn {
+  width: 100%;
+  padding: 24px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.photo-upload-btn:hover {
+  background-color: var(--background);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  margin-top: 16px;
+}
+
+/* Info grid - 2 columns */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Spin animation for loader */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile specific styling */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .priority-options {
+    flex-direction: column;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-tabs-container {
+    flex-wrap: wrap;
+  }
+}

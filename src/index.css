@@ -1,0 +1,104 @@
+:root {
+  /* Colors - Modern Medical Theme (Teal & Navy) */
+  --primary: #0d9488; /* Medical Teal */
+  --primary-light: #5eead4;
+  --primary-dark: #0f766e;
+  
+  --secondary: #64748b; /* Slate */
+  --secondary-light: #e2e8f0;
+  
+  --background: #f8fafc; /* Rất nhạt, sáng, sạch */
+  --surface: #ffffff;
+  
+  --text-primary: #0f172a; /* Navy đậm */
+  --text-secondary: #475569;
+  --text-inverse: #ffffff;
+  
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  
+  --border: #e2e8f0;
+  
+  /* Layout */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 76px;
+  --header-height: 64px;
+  
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Shadows - Soft & Modern */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -3px rgba(13, 148, 136, 0.1), 0 4px 6px -4px rgba(13, 148, 136, 0.05);
+  
+  /* Radius - Pill & Rounded corners */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease-out;
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Base utility classes */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+
+/* Custom Scrollbar cho toàn bộ app */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border); 
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary); 
+}
+
+/* Status Colors */
+.status-good { color: var(--success); font-weight: 500; }
+.status-warning { color: var(--warning); font-weight: 500;}
+.status-danger { color: var(--danger); font-weight: 500;}
+.bg-good { background-color: var(--success-light); color: var(--success); }
+.bg-warning { background-color: var(--warning-light); color: var(--warning); }
+.bg-danger { background-color: var(--danger-light); color: var(--danger); }
